@@ -6,6 +6,7 @@ from app.auth.forms import LoginForm, RegisterForm
 from werkzeug.urls import url_parse
 from app.models import User
 from werkzeug.security import generate_password_hash
+from app.email import send_email
 
 
 @bp.route('/login', methods=['GET', 'POST'])
