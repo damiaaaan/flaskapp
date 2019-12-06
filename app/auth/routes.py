@@ -63,13 +63,13 @@ def confirm(token):
         flash('The confirmation link is Invalid or has expired')
     return redirect(url_for('main.index'))
 
-@auth.route('/unconfirmed')
+@bp.route('/unconfirmed')
 def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index'))
     return render_template('auth/unconfirmed.html')
 
-@auth.route('/confirm')
+@bp.route('/confirm')
 @login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token()
