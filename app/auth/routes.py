@@ -2,7 +2,7 @@ from app import db
 from flask import redirect, url_for, flash, request, render_template
 from flask_login import login_user, current_user, logout_user, login_required
 from app.auth import bp
-from app.auth.forms import LoginForm, RegisterForm, ChangePasswordForm
+from app.auth.forms import LoginForm, RegisterForm, ChangePasswordForm, ChangeEmailForm
 from werkzeug.urls import url_parse
 from app.models import User
 from werkzeug.security import generate_password_hash
@@ -92,3 +92,32 @@ def change_password():
         else:
             flash('Invalid password.')
     return render_template("auth/change_password.html", form=form)
+
+@bp.route('/change_email', methods=['GET', 'POST'])
+@login_required
+def change_email_request():
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.password.data):
+            new_email = form.email.data.lower()
+            token = current_user.generate_email_change_token(new_email)
+            send_email(new_email, 'Confirm your email address',
+                           'auth/email/change_email',
+                           user=current_user, token=token)
+            flash('An email with instructions to confirm your new email '
+                      'address has been sent to you.')
+            return redirect(url_for('main.index'))
+        else:
+            flash('Invalid email or password.')
+    return render_template("auth/change_email.html", form=form)
+
+
+@bp.route('/change_email/<token>')
+@login_required
+def change_email(token):
+    if current_user.change_email(token):
+        db.session.commit()
+        flash('Your email address has been updated.')
+    else:
+        flash('Invalid request.')
+    return redirect(url_for('main.index'))
