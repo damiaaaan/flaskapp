@@ -2,7 +2,7 @@ from app import db
 from flask import redirect, url_for, flash, request, render_template
 from flask_login import login_user, current_user, logout_user, login_required
 from app.auth import bp
-from app.auth.forms import LoginForm, RegisterForm, ChangePasswordForm, ChangeEmailForm
+from app.auth.forms import LoginForm, RegisterForm, ChangePasswordForm, ChangeEmailForm, PasswordResetRequestForm
 from werkzeug.urls import url_parse
 from app.models import User
 from werkzeug.security import generate_password_hash
@@ -121,3 +121,35 @@ def change_email(token):
     else:
         flash('Invalid request.')
     return redirect(url_for('main.index'))
+
+
+@bp.route('/reset', methods=['GET', 'POST'])
+def password_reset_request():
+    if not current_user.is_anonymous:
+        return redirect(url_for('main.index'))
+    form = PasswordResetRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data.lower()).first()
+        if user:
+            token = user.generate_reset_token()
+            send_email(user.email, 'Reset Your Password', 'auth/mail/reset_password', user=user, token=token)
+            flash('An email with instructions to reset your password has been sent to you.')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('The email is invalid.')
+    return render_template('auth/mail/reset_password.html', form=form)
+
+
+@bp.route('/reset/<token>', methods=['GET', 'POST'])
+def password_reset(token):
+    if not current_user.is_anonymous:
+        return redirect(url_for('main.index'))
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        if User.reset_password(token, form.password.data):
+            db.session.commit()
+            flash('Your password has been updated.')
+            return redirect(url_for('auth.login'))
+        else:
+            return redirect(url_for('main.index'))
+    return render_template('auth/reset_password.html', form=form)
