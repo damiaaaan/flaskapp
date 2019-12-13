@@ -1,12 +1,13 @@
 from flask import Request
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField
+from wtforms import SubmitField, StringField, FileField
 from wtforms.validators import DataRequired, ValidationError, Length
 from app.models import User
 
 
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
+    avatar = FileField('Avatar')
     submit = SubmitField('Submit')
 
     def __init__(self, original_username, *args, **kwargs):

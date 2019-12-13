@@ -5,7 +5,63 @@
     <h1>Edit Profile</h1>
     <div class="row">
         <div class="col-md-4">
-            {{ wtf.quick_form(form) }}
+            <form action="" method="post" class="" enctype=multipart/form-data>
+              {{ form.hidden_tag() }}
+              <p>
+                {{ form.username.label(class='control-label') }}<br>
+                {{ form.username(size=32, class='form-control')}}
+              </p>
+              <p class="thumbnail">
+                {{ form.avatar }}
+              </p>
+              <p>{{ form.submit(class='btn btn-default') }}</p>
+            </form>
         </div>
     </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.js"></script>
+
+    <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+
+    <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+
+    <script>
+    FilePond.registerPlugin(
+      FilePondPluginFileValidateType,
+      FilePondPluginImageExifOrientation,
+      FilePondPluginImagePreview,
+      FilePondPluginImageCrop,
+      FilePondPluginImageResize,
+      FilePondPluginImageTransform,
+      FilePondPluginImageEdit
+    );
+    FilePond.create(
+      document.querySelector('#avatar'),
+        {
+          labelIdle: `Drag & Drop your picture or <span class="filepond--label-action">Browse</span>`,
+          imagePreviewHeight: 170,
+          imageCropAspectRatio: '1:1',
+          imageResizeTargetWidth: 200,
+          imageResizeTargetHeight: 200,
+          stylePanelLayout: 'compact circle',
+          styleLoadIndicatorPosition: 'center bottom',
+          styleProgressIndicatorPosition: 'right bottom',
+          styleButtonRemoveItemPosition: 'left bottom',
+          styleButtonProcessItemPosition: 'right bottom',
+
+          // Use Doka.js as image editor
+          //imageEditEditor: Doka.create({
+            //utils: ['crop', 'filter', 'color']
+          //})
+        }
+    );
+  </script>
 {% endblock %}

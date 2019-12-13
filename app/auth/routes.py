@@ -137,7 +137,7 @@ def password_reset_request():
             return redirect(url_for('auth.login'))
         else:
             flash('The email is invalid.')
-    return render_template('auth/mail/reset_password.html', form=form)
+    return render_template('auth/reset_password.html', form=form)
 
 
 @bp.route('/reset/<token>', methods=['GET', 'POST'])
