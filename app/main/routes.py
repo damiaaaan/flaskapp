@@ -18,18 +18,26 @@ def index():
 def edit_profile():
     form = EditProfileForm(current_user.username)
     if form.validate_on_submit():
-        
-        if request.files:
-            print(request.files["avatar"])
-            filename = avatars.save(request.files["avatar"])
-            current_user.avatar = filename
-        else:
-            print('NO HAY IMAGEN')
         current_user.username = form.username.data
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('main.edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
-    return render_template('edit_profile.html', title='Edit Profile',
-                           form=form)
+    return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+
+@bp.route('/upload', methods=['POST'])
+def upload():
+    if request.files:
+        files_names=[]
+        for key in request.files:
+            file = request.files[key]
+            filename = avatars.save(secure_filename(file.filename))
+            files_names.append(filename)
+            print('filename: ', filename)
+
+        #avatars.save(filename)
+        #current_user.avatar = filename
+    else:
+        print('NO HAY IMAGEN')

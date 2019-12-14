@@ -44,24 +44,38 @@
       FilePondPluginImageEdit
     );
     FilePond.create(
-      document.querySelector('#avatar'),
+    document.querySelector('#avatar'),
         {
-          labelIdle: `Drag & Drop your picture or <span class="filepond--label-action">Browse</span>`,
-          imagePreviewHeight: 170,
-          imageCropAspectRatio: '1:1',
-          imageResizeTargetWidth: 200,
-          imageResizeTargetHeight: 200,
-          stylePanelLayout: 'compact circle',
-          styleLoadIndicatorPosition: 'center bottom',
-          styleProgressIndicatorPosition: 'right bottom',
-          styleButtonRemoveItemPosition: 'left bottom',
-          styleButtonProcessItemPosition: 'right bottom',
+            labelIdle: `Drag & Drop your picture or <span class="filepond--label-action">Browse</span>`,
+            imagePreviewHeight: 170,
+            imageCropAspectRatio: '1:1',
+            imageResizeTargetWidth: 200,
+            imageResizeTargetHeight: 200,
+            stylePanelLayout: 'compact circle',
+            styleLoadIndicatorPosition: 'center bottom',
+            styleProgressIndicatorPosition: 'right bottom',
+            styleButtonRemoveItemPosition: 'left bottom',
+            styleButtonProcessItemPosition: 'right bottom',
 
+            allowMultiple:false,
+            maxFileSize: '1MB',
+            server: {
+                url: './',
+                process: {
+                url:'./upload',  // flask data processing app
+                headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
+                onload: onResponse,
+                },
+            },
           // Use Doka.js as image editor
           //imageEditEditor: Doka.create({
             //utils: ['crop', 'filter', 'color']
           //})
         }
     );
+
+    function onResponse(r){
+        console.log('paso')
+    }
   </script>
 {% endblock %}
