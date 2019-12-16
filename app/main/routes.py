@@ -5,6 +5,10 @@ from app import db, avatars
 from app.models import User
 from app.main.forms import EditProfileForm
 from werkzeug import secure_filename
+import os
+import json
+from werkzeug.datastructures import FileStorage
+
 
 
 @bp.route('/')
@@ -27,17 +31,18 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
 
+# uploaded data processing server for filepond javascript
 @bp.route('/upload', methods=['POST'])
 def upload():
-    if request.files:
-        files_names=[]
-        for key in request.files:
-            file = request.files[key]
-            filename = avatars.save(secure_filename(file.filename))
-            files_names.append(filename)
-            print('filename: ', filename)
+    fn=""
+    file_names=[]
+    # get file object from request.files (see: http://flask.pocoo.org/docs/1.0/api/#flask.Request.files)
+    for key in request.files:
+        file = request.files[key]
+        avatars.save(file)
+        fn = secure_filename(file.filename)
+        file_names.append(fn)
+        print('filename: ', fn)
+    # filename = avatars.save(FileStorage(fn))
 
-        #avatars.save(filename)
-        #current_user.avatar = filename
-    else:
-        print('NO HAY IMAGEN')
+    return json.dumps({'filename':[f for f in file_names]})
