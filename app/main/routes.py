@@ -1,4 +1,4 @@
-from flask import redirect, request, render_template, flash, url_for
+from flask import redirect, request, render_template, flash, url_for, make_response
 from app.main import bp
 from flask_login import current_user, login_required
 from app import db, avatars
@@ -6,9 +6,11 @@ from app.models import User
 from app.main.forms import EditProfileForm
 from werkzeug import secure_filename
 import os
-import json
-from werkzeug.datastructures import FileStorage
+import tempfile
+import shutil
+from config import Config
 
+projet_dir = os.environ.get('ROOT_DIR')
 
 
 @bp.route('/')
@@ -22,6 +24,12 @@ def index():
 def edit_profile():
     form = EditProfileForm(current_user.username)
     if form.validate_on_submit():
+        tmp_dir = os.path.join('/tmp',request.form.get('avatar'))
+        print('TEMPDIR: ' + tmp_dir)
+        tmp_file = os.listdir(tmp_dir)[0]
+        shutil.move(os.path.join(tmp_dir, tmp_file), os.path.join(Config.UPLOADED_AVATARS_DEST, tmp_file))
+        os.rmdir(tmp_dir)
+        current_user.avatar = tmp_file
         current_user.username = form.username.data
         db.session.commit()
         flash('Your changes have been saved.')
@@ -34,15 +42,25 @@ def edit_profile():
 # uploaded data processing server for filepond javascript
 @bp.route('/upload', methods=['POST'])
 def upload():
-    fn=""
-    file_names=[]
-    # get file object from request.files (see: http://flask.pocoo.org/docs/1.0/api/#flask.Request.files)
-    for key in request.files:
-        file = request.files[key]
-        avatars.save(file)
-        fn = secure_filename(file.filename)
-        file_names.append(fn)
-        print('filename: ', fn)
-    # filename = avatars.save(FileStorage(fn))
+    if request.files['avatar']:
+        file = request.files['avatar']
+        filename = secure_filename(file.filename)
+        #temp_dir = tempfile.TemporaryDirectory(dir=os.environ.get('UPLOAD_DIR'))
+        temp_dir = tempfile.mkdtemp(dir='/tmp')
 
-    return json.dumps({'filename':[f for f in file_names]})
+        print('TEMP_DIR: ' + temp_dir)
+        try:
+            file.save(os.path.join(temp_dir, filename))
+        except:
+            flash('Error uploading the image.')
+        response = make_response(str(temp_dir.split('/')[-1]), 200)
+        response.mimetype = "text/plain"
+        return response
+
+
+
+@bp.route('/delete', methods=['DELETE'])
+def delete():
+    temp_dir = request.get_data(as_text=True)
+    shutil.rmtree(os.path.join('/tmp', temp_dir)) #Remueve el directorio con el archivo
+    return make_response()

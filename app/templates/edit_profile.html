@@ -58,13 +58,21 @@
             styleButtonProcessItemPosition: 'right bottom',
 
             allowMultiple:false,
+            allowRemove:true,
             maxFileSize: '1MB',
             server: {
                 url: './',
                 process: {
-                url:'./upload',  // flask data processing app
+                url:'./upload',
                 headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
                 onload: onResponse,
+                },
+                revert: {
+                url:'./delete',
+                headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
+                onload: function(r){
+                  console.log(r)
+                  },
                 },
             },
           // Use Doka.js as image editor
@@ -75,7 +83,9 @@
     );
 
     function onResponse(r){
-        console.log('paso')
+      // set the id on the input
+      console.log(r)
+      return r
     }
   </script>
 {% endblock %}
