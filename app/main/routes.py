@@ -1,4 +1,4 @@
-from flask import redirect, request, render_template, flash, url_for, make_response
+from flask import redirect, request, render_template, flash, url_for, make_response, send_from_directory
 from app.main import bp
 from flask_login import current_user, login_required
 from app import db, avatars
@@ -11,6 +11,7 @@ import shutil
 from config import Config
 
 projet_dir = os.environ.get('ROOT_DIR')
+upload_temp_dir = os.environ.get('UPLOAD_TEMP_DIR')
 
 
 @bp.route('/')
@@ -24,8 +25,7 @@ def index():
 def edit_profile():
     form = EditProfileForm(current_user.username)
     if form.validate_on_submit():
-        tmp_dir = os.path.join('/tmp',request.form.get('avatar'))
-        print('TEMPDIR: ' + tmp_dir)
+        tmp_dir = os.path.join(upload_temp_dir, request.form.get('avatar'))
         tmp_file = os.listdir(tmp_dir)[0]
         shutil.move(os.path.join(tmp_dir, tmp_file), os.path.join(Config.UPLOADED_AVATARS_DEST, tmp_file))
         os.rmdir(tmp_dir)
@@ -46,9 +46,7 @@ def upload():
         file = request.files['avatar']
         filename = secure_filename(file.filename)
         #temp_dir = tempfile.TemporaryDirectory(dir=os.environ.get('UPLOAD_DIR'))
-        temp_dir = tempfile.mkdtemp(dir='/tmp')
-
-        print('TEMP_DIR: ' + temp_dir)
+        temp_dir = tempfile.mkdtemp(dir=upload_temp_dir)
         try:
             file.save(os.path.join(temp_dir, filename))
         except:
@@ -62,5 +60,18 @@ def upload():
 @bp.route('/delete', methods=['DELETE'])
 def delete():
     temp_dir = request.get_data(as_text=True)
-    shutil.rmtree(os.path.join('/tmp', temp_dir)) #Remueve el directorio con el archivo
+    shutil.rmtree(os.path.join(upload_temp_dir, temp_dir)) #Remueve el directorio con el archivo
     return make_response()
+
+
+@bp.route('/load', methods=['GET', 'POST'])
+def load():
+    ## TODO:
+    #response = make_response(send_file(mp3_filepath)) o send_from_directory probar los dos
+    #response.headers['X-Something'] = 'header value goes here'
+    #return response
+    response = make_response()
+    if current_user.avatar:
+        response.headers.set('Content-Disposition', 'inline')
+        response.headers.set('filename', current_user.avatar)
+    return response

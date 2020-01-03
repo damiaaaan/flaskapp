@@ -63,16 +63,30 @@
             server: {
                 url: './',
                 process: {
-                url:'./upload',
-                headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
-                onload: onResponse,
+                  url:'./upload',
+                  headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
+                  onload: onResponse,
                 },
                 revert: {
-                url:'./delete',
-                headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
-                onload: function(r){
-                  console.log(r)
-                  },
+                  url:'./delete',
+                  headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
+                  onload: function(r){
+                    console.log(r)
+                    },
+                },
+                revert: {
+                  url:'./delete',
+                  headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
+                  onload: function(r){
+                    console.log(r)
+                    },
+                },
+                load: {
+                  url:'./load',
+                  headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
+                  onload: function(r){
+                    console.log(r)
+                    },
                 },
             },
           // Use Doka.js as image editor
