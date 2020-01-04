@@ -60,6 +60,14 @@
             allowMultiple:false,
             allowRemove:true,
             maxFileSize: '1MB',
+            files:[
+                {
+                    source: '/51lZDPTeziL.jpg',
+                    options: {
+                        type: 'local'
+                    }
+                }
+            ],
             server: {
                 url: './',
                 process: {
@@ -74,18 +82,12 @@
                     console.log(r)
                     },
                 },
-                revert: {
-                  url:'./delete',
-                  headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
-                  onload: function(r){
-                    console.log(r)
-                    },
-                },
                 load: {
                   url:'./load',
                   headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
                   onload: function(r){
-                    console.log(r)
+                    console.log(r);
+                    return(r)
                     },
                 },
             },

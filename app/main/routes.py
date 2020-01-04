@@ -29,6 +29,8 @@ def edit_profile():
         tmp_file = os.listdir(tmp_dir)[0]
         shutil.move(os.path.join(tmp_dir, tmp_file), os.path.join(Config.UPLOADED_AVATARS_DEST, tmp_file))
         os.rmdir(tmp_dir)
+        if current_user.avatar:
+            os.remove(os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))
         current_user.avatar = tmp_file
         current_user.username = form.username.data
         db.session.commit()
@@ -45,7 +47,7 @@ def upload():
     if request.files['avatar']:
         file = request.files['avatar']
         filename = secure_filename(file.filename)
-        #temp_dir = tempfile.TemporaryDirectory(dir=os.environ.get('UPLOAD_DIR'))
+        # temp_dir = tempfile.TemporaryDirectory(dir=os.environ.get('UPLOAD_DIR'))
         temp_dir = tempfile.mkdtemp(dir=upload_temp_dir)
         try:
             file.save(os.path.join(temp_dir, filename))
@@ -56,22 +58,16 @@ def upload():
         return response
 
 
-
 @bp.route('/delete', methods=['DELETE'])
 def delete():
     temp_dir = request.get_data(as_text=True)
-    shutil.rmtree(os.path.join(upload_temp_dir, temp_dir)) #Remueve el directorio con el archivo
+    shutil.rmtree(os.path.join(upload_temp_dir, temp_dir))  # Remueve el directorio con el archivo
     return make_response()
 
 
-@bp.route('/load', methods=['GET', 'POST'])
-def load():
+@bp.route('/load/<name>', methods=['GET', 'POST'])
+def load(name):
     ## TODO:
-    #response = make_response(send_file(mp3_filepath)) o send_from_directory probar los dos
-    #response.headers['X-Something'] = 'header value goes here'
-    #return response
-    response = make_response()
+    # Cambiar esto por el nombre real de la imagen, ahora viene uno harcodeado y toma el de la base
     if current_user.avatar:
-        response.headers.set('Content-Disposition', 'inline')
-        response.headers.set('filename', current_user.avatar)
-    return response
+        return send_from_directory(Config.UPLOADED_AVATARS_DEST, current_user.avatar, as_attachment=True)

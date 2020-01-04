@@ -9,11 +9,6 @@ load_dotenv(os.path.join(basedir, '.env'))
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'You-Will-Never-Pa$$'
 
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    APP_MAIL_SUBJECT_PREFIX = 'FLASKAPP-MAIL'
-    APP_MAIL_SENDER = 'SENDER'
-
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT'))
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in ['true', 'on', '1']
