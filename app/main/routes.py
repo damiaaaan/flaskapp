@@ -28,9 +28,13 @@ def edit_profile():
         tmp_dir = os.path.join(upload_temp_dir, request.form.get('avatar'))
         tmp_file = os.listdir(tmp_dir)[0]
         shutil.move(os.path.join(tmp_dir, tmp_file), os.path.join(Config.UPLOADED_AVATARS_DEST, tmp_file))
+        print('MOVIENDO: '+ os.path.join(Config.UPLOADED_AVATARS_DEST, tmp_file))
         os.rmdir(tmp_dir)
         if current_user.avatar:
-            os.remove(os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))
+            try:
+                os.remove(os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))
+            except:
+                print('Error al eliminar el archivo '+ os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))
         current_user.avatar = tmp_file
         current_user.username = form.username.data
         db.session.commit()

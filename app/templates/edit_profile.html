@@ -68,6 +68,12 @@
                     }
                 }
             ],
+            onprocessfilestart: function(){
+              $('#submit').prop('disabled', true);
+            },
+            onprocessfile: function(){
+              $('#submit').prop('disabled', false);
+            },
             server: {
                 url: './',
                 process: {

@@ -26,7 +26,7 @@ class Config(object):
     FLASKY_COMMENTS_PER_PAGE = 30
     FLASKY_SLOW_DB_QUERY_TIME = 0.5
 
-    UPLOADED_AVATARS_DEST = os.path.join(basedir, 'app/static/image')
+    UPLOADED_AVATARS_DEST = os.path.join(basedir, os.environ.get('UPLOAD_AVATAR_DIR'))
 
 
     @staticmethod
