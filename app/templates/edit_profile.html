@@ -17,6 +17,7 @@
               <p>{{ form.submit(class='btn btn-default') }}</p>
             </form>
         </div>
+        <span id="user_avatar" hidden>{{current_user.avatar}}</span>
     </div>
 {% endblock %}
 
@@ -62,7 +63,7 @@
             maxFileSize: '1MB',
             files:[
                 {
-                    source: '/51lZDPTeziL.jpg',
+                    source: userImage(),
                     options: {
                         type: 'local'
                     }
@@ -79,20 +80,21 @@
                 process: {
                   url:'./upload',
                   headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
-                  onload: onResponse,
+                  onload: function(r){
+                    return r
+                    },
                 },
                 revert: {
                   url:'./delete',
                   headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
                   onload: function(r){
-                    console.log(r)
+                    return r
                     },
                 },
                 load: {
                   url:'./load',
                   headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
                   onload: function(r){
-                    console.log(r);
                     return(r)
                     },
                 },
@@ -104,10 +106,9 @@
         }
     );
 
-    function onResponse(r){
+    function userImage(){
       // set the id on the input
-      console.log(r)
-      return r
+      return '/'+$('#user_avatar').text()
     }
   </script>
 {% endblock %}
