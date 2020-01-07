@@ -1,3 +1,5 @@
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask
 from config import DevelopmentConfig
 from flask_bootstrap import Bootstrap
@@ -7,6 +9,7 @@ from flask_migrate import Migrate
 from flask_mail import Mail
 from config import config
 from flask_uploads import UploadSet, IMAGES, configure_uploads
+import os
 
 
 bootstrap = Bootstrap()
@@ -38,6 +41,22 @@ def create_app(config_name):
 
     configure_uploads(app, avatars)
 
+    if app.development or app.testing:
+        if app.config['LOG_TO_STDOUT']:
+            stream_handler = logging.StreamHandler()
+            stream_handler.setLevel(loggin.INFO)
+            app.logger.addHandler(stream_handler)
+        else:
+            if not os.path.exists('logs'):
+                os.mkdir('logs')
+            file_handler = RotatingFileHandler('logs/flaskapp.log', maxBytes=10240, backupCount=10)
+            file_handler.setFormatter(logging.Formatter(
+                '%(asctime)s %(levelname)s: %(message)s '
+                '[in %(pathname)s:%(lineno)d]'))
+            file_handler.setLevel(logging.INFO)
+            app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('FlaskApp startup')
     return app
 
 # Evita importaciones recursivas
