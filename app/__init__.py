@@ -41,7 +41,7 @@ def create_app(config_name):
 
     configure_uploads(app, avatars)
 
-    if app.development or app.testing:
+    if not app.debug or app.testing:
         if app.config['LOG_TO_STDOUT']:
             stream_handler = logging.StreamHandler()
             stream_handler.setLevel(loggin.INFO)
