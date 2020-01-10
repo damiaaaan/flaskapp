@@ -11,13 +11,21 @@
                 {{ form.username.label(class='control-label') }}<br>
                 {{ form.username(size=32, class='form-control')}}
               </p>
+              <p>
+                {{ form.first_name.label(class='control-label') }}<br>
+                {{ form.first_name(size=32, class='form-control')}}
+              </p>
+              <p>
+                {{ form.last_name.label(class='control-label') }}<br>
+                {{ form.last_name(size=32, class='form-control')}}
+              </p>
               <p class="thumbnail">
                 {{ form.avatar }}
               </p>
               <p>{{ form.submit(class='btn btn-default') }}</p>
             </form>
         </div>
-        <span id="user_avatar" hidden>{{current_user.avatar}}</span>
+        <input type="text" id="user_avatar" name="" value="{{current_user.avatar | default('', True)}}" hidden>
     </div>
 {% endblock %}
 
@@ -108,7 +116,16 @@
 
     function userImage(){
       // set the id on the input
-      return '/'+$('#user_avatar').text()
+      img = $('#user_avatar').val();
+      console.log(img);
+      if(img != ""){
+          console.log("SI")
+          return '/'+img
+      }
+      else {
+        console.log('NO');
+        return '/test.jpg'
+      }
     }
   </script>
 {% endblock %}

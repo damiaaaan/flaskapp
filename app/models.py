@@ -9,6 +9,8 @@ from flask import current_app
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
     password_hash = db.Column(db.String(128))
     email = db.Column(db.String(120), index=True, unique=True)
     avatar = db.Column(db.String(30))
@@ -40,7 +42,7 @@ class User(UserMixin, db.Model):
     def generate_reset_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'reset': self.id}).decode('utf-8')
-        
+
     def generate_email_change_token(self, new_email, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps(

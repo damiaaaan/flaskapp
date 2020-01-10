@@ -7,6 +7,8 @@ from app.models import User
 
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
     avatar = FileField('Avatar')
     submit = SubmitField('Submit')
 
