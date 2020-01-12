@@ -12,9 +12,9 @@ class EditProfileForm(FlaskForm):
     avatar = FileField('Avatar')
     submit = SubmitField('Submit')
 
-    def __init__(self, original_username, *args, **kwargs):
+    def __init__(self, current_user, *args, **kwargs):
         super(EditProfileForm, self).__init__(*args, **kwargs)
-        self.original_username = original_username
+        self.original_username = current_user.username
 
     def validate_username(self, username):
         if username.data != self.original_username:

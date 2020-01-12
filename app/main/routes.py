@@ -23,7 +23,7 @@ def index():
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm(current_user.username)
+    form = EditProfileForm(current_user)
     if form.validate_on_submit():
         if current_user.avatar != request.form.get('avatar'):
             print('avatar: '+request.form.get('avatar'))
@@ -49,6 +49,8 @@ def edit_profile():
         return redirect(url_for('main.edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
 
