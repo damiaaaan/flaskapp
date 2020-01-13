@@ -19,6 +19,13 @@ upload_temp_dir = os.environ.get('UPLOAD_TEMP_DIR')
 def index():
     return render_template('index.html', title='Index')
 
+@bp.route('/users')
+def users():
+    page = request.args.get('page', 1, type=int)
+    users = User.query.paginate(page, Config.USERS_PER_PAGE, False)
+    next_url = url_for('main.users', page=users.next_num) if users.has_next else None
+    prev_url = url_for('main.users', page=users.prev_num) if users.has_prev else None
+    return render_template('main/users.html', users=users, next_url=next_url, prev_url=prev_url)
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -51,7 +58,7 @@ def edit_profile():
         form.username.data = current_user.username
         form.first_name.data = current_user.first_name
         form.last_name.data = current_user.last_name
-    return render_template('edit_profile.html', title='Edit Profile', form=form)
+    return render_template('main/edit_profile.html', title='Edit Profile', form=form)
 
 
 # uploaded data processing server for filepond javascript

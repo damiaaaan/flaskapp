@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>Users</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Email</th>
+      <th scope="col">First name</th>
+      <th scope="col">Lastname</th>
+      <th scope="col">Confirmed</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users.items %}
+    <tr>
+      <th scope="row">{{ user.id }}</th>
+      <td>{{ user.email }}</td>
+      <td>{{ user.first_name }}</td>
+      <td>{{ user.last_name }}</td>
+      <td>
+        {% if user.confirmed %} Yes {% else %} No {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    {% if prev_url %}
+    <li class="page-item">
+      <a class="page-link" href="{{ prev_url }}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&laquo;</a>
+    </li>
+    {% endif %}
+    {% for page_num in users.iter_pages() %}
+      {% if page_num %}
+        {% if users.page == page_num %}
+        <li class="page-item active" aria-current="page"><a class="page-link" href="#">{{ page_num }} <span class="sr-only">(current)</span></a></li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('main.users', page=page_num) }}">{{page_num}}</a></li>
+        {% endif %}
+      {% else %}
+        ...
+      {% endif %}
+    {% endfor %}
+    <li>
+      {% if next_url %}
+      <a class="page-link" href="{{ next_url }}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&raquo;</a>
+      </li>
+      {% endif %}
+    </li>
+  </ul>
+</nav>
+{% for page_num in users.iter_pages() %}
+  {% if page_num %}
+
+  {% else %}
+  {% endif %}
+{% endfor %}
+{% endblock %}
