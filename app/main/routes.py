@@ -2,7 +2,7 @@ from flask import redirect, request, render_template, flash, url_for, make_respo
 from app.main import bp
 from flask_login import current_user, login_required
 from app import db, avatars
-from app.models import User
+from app.models import User, Role
 from app.main.forms import EditProfileForm
 from werkzeug import secure_filename
 import os
@@ -91,3 +91,27 @@ def load(name):
     # Cambiar esto por el nombre real de la imagen, ahora viene uno harcodeado y toma el de la base
     if current_user.avatar:
         return send_from_directory(Config.UPLOADED_AVATARS_DEST, current_user.avatar, as_attachment=True)
+
+@bp.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
+@login_required
+#@admin_required
+def edit_profile_admin(id):
+    user = User.query.get_or_404(id)
+    form = EditProfileAdminForm(user=user)
+    if form.validate_on_submit():
+        user.email = form.username.data
+        user.username = form.username.data
+        user.first_name = form.first_name.data
+        user.role.data = Role.query.get(form.role.data)
+        user.last_name = form.last_name.data
+        user.confirmed = form.confirmed.data
+        db.session.add(user)
+        db.session.commit()
+        flash('The profile has been edited.')
+        return redirect(url_for('users'))
+    form.username.data = user.username
+    form.email.data = user.email
+    form.firstname.data = user.first_name
+    form.last_name.data = user.last_name
+    form.confirmed.data = user.confirmed
+    return render_template('main.edit_profile_admin.hmlt', user=user, form=form)
