@@ -16,7 +16,7 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     APP_MAIL_SUBJECT_PREFIX = '[FlaskApp]'
     APP_MAIL_SENDER = 'FlaskApp Admin <flasky@example.com>'
-    APP_ADMIN = os.environ.get('FLASK_ADMIN')
+    FLASK_ADMIN = os.environ.get('FLASK_ADMIN')
     SSL_REDIRECT = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
