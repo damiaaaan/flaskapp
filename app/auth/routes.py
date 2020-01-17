@@ -7,6 +7,7 @@ from werkzeug.urls import url_parse
 from app.models import User
 from werkzeug.security import generate_password_hash
 from app.email import send_email
+from flask import current_app
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -41,12 +42,16 @@ def register():
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
+        if user.email == current_app.config['FLASK_ADMIN']:
+            user.confirmed = True
         db.session.add(user)
         db.session.commit()
-        token = user.generate_confirmation_token()
-        print('TOKEN: '+ token)
-        send_email(user.email, 'Confirm your account', 'auth/mail/confirm', user=user, token=token)
-        flash('A confirmation mail has been sent to you by email, check your spam folder!')
+
+        if user.email != current_app.config['FLASK_ADMIN']:
+            token = user.generate_confirmation_token()
+            print('TOKEN: '+ token)
+            send_email(user.email, 'Confirm your account', 'auth/mail/confirm', user=user, token=token)
+            flash('A confirmation mail has been sent to you by email, check your spam folder!')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', title='Register', form=form)
 
