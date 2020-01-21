@@ -1,8 +1,8 @@
 from flask import Request
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField, FileField, BooleanField, SelectField 
+from wtforms import SubmitField, StringField, FileField, BooleanField, SelectField
 from wtforms.validators import DataRequired, ValidationError, Length, Email, Regexp
-from app.models import User
+from app.models import User, Role
 
 
 class EditProfileForm(FlaskForm):
@@ -33,7 +33,8 @@ class EditProfileAdminForm(FlaskForm):
     role = SelectField('Role', coerce=int)
     first_name = StringField('First Name', validators=[DataRequired(), Length(3, 64)])
     last_name = StringField('Last Name', validators=[DataRequired(), Length(3, 64)])
-
+    submit = SubmitField('Submit')
+    
     def __init__(self, user, *args, **kwargs):
         super(EditProfileAdminForm, self).__init__(*args, **kwargs)
         self.role.choices = [(role.id, role.name)
