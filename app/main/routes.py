@@ -3,12 +3,13 @@ from app.main import bp
 from flask_login import current_user, login_required
 from app import db, avatars
 from app.models import User, Role
-from app.main.forms import EditProfileForm
+from app.main.forms import EditProfileForm, EditProfileAdminForm
 from werkzeug import secure_filename
 import os
 import tempfile
 import shutil
 from config import Config
+from app.decorators import admin_required, permission_required
 
 projet_dir = os.environ.get('ROOT_DIR')
 upload_temp_dir = os.environ.get('UPLOAD_TEMP_DIR')
@@ -20,6 +21,8 @@ def index():
     return render_template('index.html', title='Index')
 
 @bp.route('/users')
+@login_required
+@admin_required
 def users():
     page = request.args.get('page', 1, type=int)
     users = User.query.paginate(page, Config.USERS_PER_PAGE, False)
@@ -94,7 +97,7 @@ def load(name):
 
 @bp.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
 @login_required
-#@admin_required
+@admin_required
 def edit_profile_admin(id):
     user = User.query.get_or_404(id)
     form = EditProfileAdminForm(user=user)
@@ -108,10 +111,10 @@ def edit_profile_admin(id):
         db.session.add(user)
         db.session.commit()
         flash('The profile has been edited.')
-        return redirect(url_for('users'))
+        return redirect(url_for('main.users'))
     form.username.data = user.username
     form.email.data = user.email
-    form.firstname.data = user.first_name
+    form.first_name.data = user.first_name
     form.last_name.data = user.last_name
     form.confirmed.data = user.confirmed
-    return render_template('main.edit_profile_admin.hmlt', user=user, form=form)
+    return render_template('main/edit_profile_admin.html', user=user, form=form)
