@@ -95,6 +95,14 @@ def load(name):
     if current_user.avatar:
         return send_from_directory(Config.UPLOADED_AVATARS_DEST, current_user.avatar, as_attachment=True)
 
+
+@bp.route('/user/<username>')
+@login_required
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('main/user.html', user=user)
+
+
 @bp.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
