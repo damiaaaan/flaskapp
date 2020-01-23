@@ -1,5 +1,6 @@
 :root {
   --avatar-size: 18px;
+  --avatar-size-profile: 18rem;
   /* change this value anything, e.g., 100px, 10rem, etc. */
 }
 
@@ -19,4 +20,23 @@
   position: relative;
   /* top: calc(var(--avatar-size) / 4); /* 25% of parent */
 
+}
+
+.circle-profile {
+  background-color: #ccc;
+  border-radius: 50%;
+  height: var(--avatar-size-profile);
+  text-align: center;
+  width: var(--avatar-size-profile);
+}
+
+.initials-profile {
+  font-size: calc(var(--avatar-size-profile) / 2); /* 50% of parent */
+  line-height: 1;
+  position: relative;
+  top: calc(var(--avatar-size-profile) / 4); /* 25% of parent */
+}
+.profile-header {
+    min-height: 260px;
+    margin-left: 280px;
 }

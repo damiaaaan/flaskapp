@@ -2,3 +2,20 @@
 {% block title %}FlaskApp - {{user.username}}{% endblock %}
 
 {% block app_content %}
+<table class="table table-hover">
+   <tr>
+     <td>
+       {% if user.avatar %}
+       <img src="{{ url_for('static', filename='image/'+current_user.avatar) }}" class="img-circle">
+       {% else %}
+       <div class="circle-profile">
+         <span class="initials-profile">{{ current_user.first_name[0]|upper }}{{ current_user.last_name[0]|upper }}</span>
+       </div>
+       {% endif %}
+     </td>
+    <td>
+      <h3>{{ user.first_name }}</h3>
+      <h3>{{ user.last_name }}</h3>
+    </td>
+</table>
+{% endblock %}
