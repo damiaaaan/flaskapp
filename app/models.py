@@ -4,6 +4,8 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
+import os
+from config import Config
 
 class Permission:
     """Roles permissions"""
@@ -80,6 +82,11 @@ class User(UserMixin, db.Model):
                 self.role == Role.query.filter_by(name='Administrator').first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
+
+    def get_avatar(self):
+        if self.avatar:
+            file = os.listdir(os.path.join(Config.UPLOADED_AVATARS_DEST, self.avatar))[0]
+            return os.path.join(self.avatar, file)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

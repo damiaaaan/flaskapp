@@ -35,22 +35,23 @@ def users():
 def edit_profile():
     form = EditProfileForm(current_user)
     if form.validate_on_submit():
-        if current_user.avatar != request.form.get('avatar'):
-            print('avatar: '+request.form.get('avatar'))
-            print('upload_temp_dir: ' + upload_temp_dir)
-            tmp_dir = os.path.join(upload_temp_dir, request.form.get('avatar'))
-            print('tmp_dir: '+tmp_dir)
-            tmp_file = os.listdir(tmp_dir)[0]
-            print('tmp_file: '+tmp_file)
-            shutil.move(os.path.join(tmp_dir, tmp_file), os.path.join(Config.UPLOADED_AVATARS_DEST, tmp_file))
-            print('MOVIENDO: '+ os.path.join(Config.UPLOADED_AVATARS_DEST, tmp_file))
-            os.rmdir(tmp_dir)
-            if current_user.avatar:
-                try:
-                    os.remove(os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))
-                except:
-                    print('Error al eliminar el archivo '+ os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))
-                    current_user.avatar = tmp_file
+        avatar = request.form.get('avatar')
+        if avatar:
+            avatar = avatar.replace("/", "")
+            path = os.path.join(Config.UPLOADED_AVATARS_DEST, avatar)
+            if not os.path.isdir(path):
+                tmp_dir = os.path.join(upload_temp_dir, avatar)
+                tmp_file = os.listdir(tmp_dir)[0]
+                shutil.move(tmp_dir, os.path.join(Config.UPLOADED_AVATARS_DEST, avatar))
+                #shutil.rmtree(tmp_dir)
+                if current_user.avatar:
+                    try:
+                        shutil.rmtree(os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))
+                    except:
+                        print('Error al eliminar el archivo '+ os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))
+                current_user.avatar = avatar
+        else:
+            current_user.avatar = None
         current_user.username = form.username.data
         current_user.first_name = form.first_name.data
         current_user.last_name = form.last_name.data
@@ -93,7 +94,8 @@ def load(name):
     ## TODO:
     # Cambiar esto por el nombre real de la imagen, ahora viene uno harcodeado y toma el de la base
     if current_user.avatar:
-        return send_from_directory(Config.UPLOADED_AVATARS_DEST, current_user.avatar, as_attachment=True)
+        file = os.listdir(os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))[0]
+        return send_from_directory(os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar), file, as_attachment=True)
 
 
 @bp.route('/user/<username>')
