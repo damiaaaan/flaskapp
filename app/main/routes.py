@@ -93,10 +93,11 @@ def delete():
 def load(name):
     ## TODO:
     # Cambiar esto por el nombre real de la imagen, ahora viene uno harcodeado y toma el de la base
-    if current_user.avatar:
-        file = os.listdir(os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar))[0]
-        return send_from_directory(os.path.join(Config.UPLOADED_AVATARS_DEST, current_user.avatar), file, as_attachment=True)
-
+    #if current_user.avatar:
+    if os.path.isdir(os.path.join(Config.UPLOADED_AVATARS_DEST, name)):
+        file = os.listdir(os.path.join(Config.UPLOADED_AVATARS_DEST, name))[0]
+        return send_from_directory(os.path.join(Config.UPLOADED_AVATARS_DEST, name), file, as_attachment=True)
+        
 
 @bp.route('/user/<username>')
 @login_required
