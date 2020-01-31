@@ -43,6 +43,20 @@
     <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
 
     <script>
+
+    img = $('#user_avatar').val();
+    file = [];
+    if(img != "") {
+      file = [
+          {
+              source: img,
+              options: {
+                  type: 'local'
+              }
+          }
+      ];
+    };
+
     FilePond.registerPlugin(
       FilePondPluginFileValidateType,
       FilePondPluginImageExifOrientation,
@@ -52,7 +66,7 @@
       FilePondPluginImageTransform,
       FilePondPluginImageEdit
     );
-    FilePond.create(
+    pond = FilePond.create(
     document.querySelector('#avatar'),
         {
             labelIdle: `Drag & Drop your picture or <span class="filepond--label-action">Browse</span>`,
@@ -69,14 +83,9 @@
             allowMultiple:false,
             allowRemove:true,
             maxFileSize: '1MB',
-            files:[
-                {
-                    source: userImage(),
-                    options: {
-                        type: 'local'
-                    }
-                }
-            ],
+
+            files: file,
+
             onprocessfilestart: function(){
               $('#submit').prop('disabled', true);
             },
@@ -99,8 +108,9 @@
                     return r
                     },
                 },
+
                 load: {
-                  url:'./load',
+                  url:'./load/',
                   headers:{'X-CSRF-TOKEN': document.querySelector('input[name="csrf_token"]').getAttribute("value")},
                   onload: function(r){
                     return(r)
@@ -113,19 +123,5 @@
           //})
         }
     );
-
-    function userImage(){
-      // set the id on the input
-      img = $('#user_avatar').val();
-      console.log(img);
-      if(img != ""){
-          console.log("SI")
-          return '/'+img
-      }
-      else {
-        console.log('NO');
-        return '/test.jpg'
-      }
-    }
   </script>
 {% endblock %}
