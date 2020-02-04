@@ -25,7 +25,14 @@
       <td>
         {% if user.confirmed %} Yes {% else %} No {% endif %}
       </td>
-      <td><a href="{{url_for('main.edit_profile_admin', id=user.id)}}"><i class="fas fa-edit"></i></td></a>
+      <td>
+        <a href="{{url_for('main.edit_profile_admin', id=user.id)}}">
+          <i class="fas fa-edit"></i>
+        </a>
+        <a href="{{url_for('main.user', username=user.username)}}">
+          <i class="fas fa-eye"></i>
+        </a>
+      </td>
     </tr>
     {% endfor %}
     </tbody>

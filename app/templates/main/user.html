@@ -6,7 +6,7 @@
    <tr>
      <td>
        {% if user.avatar %}
-       <img src="{{ url_for('static', filename='image/'+current_user.avatar) }}" class="img-circle">
+       <img src="{{ url_for('static', filename='image/'+current_user.get_avatar()) }}" class="img-circle">
        {% else %}
        <div class="circle-profile">
          <span class="initials-profile">{{ current_user.first_name[0]|upper }}{{ current_user.last_name[0]|upper }}</span>
