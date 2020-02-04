@@ -33,6 +33,9 @@ def create_app(config_name):
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
+
     db.init_app(app)
     migrate.init_app(app, db)
     bootstrap.init_app(app)
