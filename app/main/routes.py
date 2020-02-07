@@ -2,7 +2,7 @@ from flask import redirect, request, render_template, flash, url_for, make_respo
 from app.main import bp
 from flask_login import current_user, login_required
 from app import db, avatars
-from app.models import User, Role
+from app.models import User, Role, Permission
 from app.main.forms import EditProfileForm, EditProfileAdminForm
 from werkzeug import secure_filename
 import os
@@ -97,14 +97,16 @@ def load(name):
     if os.path.isdir(os.path.join(Config.UPLOADED_AVATARS_DEST, name)):
         file = os.listdir(os.path.join(Config.UPLOADED_AVATARS_DEST, name))[0]
         return send_from_directory(os.path.join(Config.UPLOADED_AVATARS_DEST, name), file, as_attachment=True)
-        
 
-@bp.route('/user/<username>')
+
+@bp.route('/user/<username>', methods=['GET'])
 @login_required
 def user(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template('main/user.html', user=user)
-
+    if current_user.username == username or current_user.can(Permission.ADMIN):
+        user = User.query.filter_by(username=username).first_or_404()
+        return render_template('main/user.html', user=user)
+    return render_template('errors/404.html'), 404
+    
 
 @bp.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
 @login_required
