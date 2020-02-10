@@ -20,6 +20,7 @@ upload_temp_dir = os.environ.get('UPLOAD_TEMP_DIR')
 def index():
     return render_template('index.html', title='Index')
 
+
 @bp.route('/users')
 @login_required
 @admin_required
@@ -29,6 +30,7 @@ def users():
     next_url = url_for('main.users', page=users.next_num) if users.has_next else None
     prev_url = url_for('main.users', page=users.prev_num) if users.has_prev else None
     return render_template('main/users.html', users=users, next_url=next_url, prev_url=prev_url)
+
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -105,8 +107,8 @@ def user(username):
     if current_user.username == username or current_user.can(Permission.ADMIN):
         user = User.query.filter_by(username=username).first_or_404()
         return render_template('main/user.html', user=user)
-    return render_template('errors/404.html'), 404
-    
+    return render_template('errors/403.html'), 403
+
 
 @bp.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
 @login_required
