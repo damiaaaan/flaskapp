@@ -104,8 +104,8 @@ def load(name):
 @bp.route('/user/<username>', methods=['GET'])
 @login_required
 def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
     if current_user.username == username or current_user.can(Permission.ADMIN):
-        user = User.query.filter_by(username=username).first_or_404()
         return render_template('main/user.html', user=user)
     return render_template('errors/403.html'), 403
 
